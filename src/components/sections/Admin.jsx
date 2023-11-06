@@ -3,6 +3,7 @@ import { Modal, Tab, TabList, TabPanel, TabPanels, Tabs, TextInput } from '@carb
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import { Categories } from '../view/Categories';
+import { Products } from '../view/Products';
 
 export const Admin = () => {
 
@@ -93,9 +94,11 @@ export const Admin = () => {
              </TabList>
              <TabPanels>
                 <TabPanel>
-                  <Categories/>
+                  <Categories />
                 </TabPanel>
-                <TabPanel>Products</TabPanel>
+                <TabPanel>
+                  <Products />
+                </TabPanel>
                 <TabPanel>Ingredients</TabPanel>
               </TabPanels>
             </Tabs>

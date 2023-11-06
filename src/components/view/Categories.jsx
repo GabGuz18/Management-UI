@@ -16,7 +16,7 @@ import {
 } from '@carbon/react';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import './categoriesStyles.scss'
+import './Styles.scss'
 
 export const Categories = () => {
 
@@ -38,6 +38,7 @@ export const Categories = () => {
 		try{
 			const header = {'Authorization': `Token ${token}`}
 			const res = await axios.get('http://127.0.0.1:8000/api/categories/', { headers: header})
+			console.log(res.data)
 			setCategories(res.data.data)
 		}
 		catch(err){
@@ -61,9 +62,8 @@ export const Categories = () => {
 	}
 
 	const openModalEdit = (category, id) => {
-		setTypeForm('Update')
 		setIsSelected({'id':id, 'category': category})
-		openModal('Edit')
+		openModal('Update')
 	}
 
 	const filter = () => {
@@ -88,14 +88,13 @@ export const Categories = () => {
 			const header = {'Authorization': `Token ${token}`}
 			const res = await axios.post('http://localhost:8000/api/categories/', form, { headers : header })
 			setShowAlert(true)
-			setIsOpen(!isOpen)
 			setError(false)
+			setIsOpen(!isOpen)
 		}
 		catch(err){
-			setErrorMessage(err.response.data.message)
+			setError(true)
 			setShowAlert(true)
-			setIsOpen(!isOpen)
-			setError(!true)
+			setErrorMessage(err.response.data.message)
 			setIsOpen(!isOpen)
 		}
 	}
@@ -112,7 +111,6 @@ export const Categories = () => {
 		catch(err){
 			setErrorMessage(err.response.data.message)
 			setShowAlert(true)
-			setIsOpen(!isOpen)
 			setError(true)
 			setIsOpen(!isOpen)
 		}
