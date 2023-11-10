@@ -90,7 +90,6 @@ export const Admin = () => {
               <TabList aria-label="List of tabs" contained>
                 <Tab>Categories</Tab>
                 <Tab>Products</Tab>
-                <Tab>Ingredients</Tab>
              </TabList>
              <TabPanels>
                 <TabPanel>
@@ -99,7 +98,6 @@ export const Admin = () => {
                 <TabPanel>
                   <Products />
                 </TabPanel>
-                <TabPanel>Ingredients</TabPanel>
               </TabPanels>
             </Tabs>
           </div>

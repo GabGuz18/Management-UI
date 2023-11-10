@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { 
 	Button,
-	Dropdown,
 	InlineNotification, 
 	Modal, 
+	Select, 
+	SelectItem, 
 	Table, 
 	TableBody, 
 	TableCell, 
@@ -36,7 +37,8 @@ export const Products = () => {
 		'id': '', 
 		'product': '', 
 		'quantity': '', 
-		'price': ''
+		'price': '',
+		'category':0
 	})
 
 	const token = localStorage.getItem('token');
@@ -69,12 +71,18 @@ export const Products = () => {
 	const openModal = (type) => {
 		setIsOpen(!isOpen);
 		setTypeForm(type)
+		setDisabled(true)
 	}
 
 	const openModalEdit = (product) => {
-		const { id, quantity, price } = product;
-		setSelected({id, 'product': product.product, quantity, price});
-		openModal('Edit')
+		setSelected({
+			'id': product.id, 
+			'product': product.product, 
+			'quantity': product.quantity, 
+			'price': product.price, 
+			'category': product.category_id
+		});
+		openModal('Update')
 	}
 
 	const closeAlert = () => {
@@ -139,7 +147,7 @@ export const Products = () => {
 	useEffect(() => {
 		getProducts();
 		getCategories();
-	}, [])
+	}, [isOpen])
 	
 
   return (
@@ -182,7 +190,9 @@ export const Products = () => {
 							products.map((product) => 
 								<TableRow 
 									key={product.id}
-									onClick={() => openModalEdit(product)}
+									onClick={() => {
+										openModalEdit(product);
+									}}
 								>
 										<TableCell key={product.product}>{product.product}</TableCell>
 										<TableCell key={product.quantity}>{product.quantity}</TableCell>
@@ -241,7 +251,7 @@ export const Products = () => {
 					labelText="Quantity" 
 					placeholder={
 						typeForm === 'Create' 
-							? 'Quantity'
+							? 'Quantity'	
 							: selected.quantity
 					}
 					style={{
@@ -255,7 +265,11 @@ export const Products = () => {
 				<TextInput
 					data-modal-primary-focus 
 					id="text-input-1" 
-					labelText="Price" 
+					labelText={
+						typeForm === 'Create' 
+							? 'Price'
+							: `Price ${selected.price}`
+					}
 					placeholder={
 						typeForm === 'Create' 
 							? 'Price'
@@ -270,13 +284,26 @@ export const Products = () => {
 					type='number'
 					onChange={handleChangeForm}
 				/>
-				<Dropdown
-					id='category'
-					titleText='Category'
-					helperText='Select the category'
-					items={categories}
-					itemToString={category => categories ? category.category : ''}
-				/>
+				<Select 
+					id="select-1" 
+					labelText="Category" 
+					helperText="Select a category" 
+					defaultValue={typeForm !== 'Create' && selected.category}
+				>
+					<SelectItem
+						value={''}
+						text=''
+					/>
+					{
+						categories && categories.map((category, index) => {
+							return <SelectItem
+								key={index}
+								value={category.id}
+								text={category.category}
+							/>
+						})
+					}
+				</Select>
 			</Modal>
 		</>
   )
