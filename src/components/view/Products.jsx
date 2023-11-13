@@ -18,11 +18,14 @@ import {
 	Theme
 } from '@carbon/react'
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './Styles.scss'
 
 export const Products = () => {
 
 	const headers = ['Product', 'Quantity', 'Price']
+	const navigate = useNavigate();
+
 	const [products, setProducts] = useState([]);
 	const [categories, setCategories] = useState([]);
 	const [search, setSearch] = useState('');
@@ -33,15 +36,7 @@ export const Products = () => {
 	const [showAlert, setShowAlert] = useState(false);
 	const [error, setError] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
-	const [selected, setSelected] = useState({
-		'id': '', 
-		'product': '', 
-		'quantity': '', 
-		'price': '',
-		'category':0
-	})
 
-	const token = localStorage.getItem('token');
 
 	const handleChange = (e) => {
 		const { value } = e.target;
@@ -74,17 +69,6 @@ export const Products = () => {
 		setDisabled(true)
 	}
 
-	const openModalEdit = (product) => {
-		setSelected({
-			'id': product.id, 
-			'product': product.product, 
-			'quantity': product.quantity, 
-			'price': product.price, 
-			'category': product.category_id
-		});
-		openModal('Update')
-	}
-
 	const closeAlert = () => {
 		setShowAlert(false);
 		setError(false);
@@ -92,8 +76,7 @@ export const Products = () => {
 
 	const getCategories = async () => {
 		try{
-			const header = {'Authorization': `Token ${token}`}
-			const res = await axios.get('http://127.0.0.1:8000/api/categories/', { headers: header})
+			const res = await axios.get('http://127.0.0.1:8000/api/categories/')
 			setCategories(res.data.data)
 		}
 		catch(err){
@@ -103,10 +86,8 @@ export const Products = () => {
 
 	const getProducts = async () => {
 		try{
-			const header = {'Authorization': `Token ${token}`}
-			const res = await axios.get('http://127.0.0.1:8000/api/products/', { headers: header})
+			const res = await axios.get('http://127.0.0.1:8000/api/products/')
 			setProducts(res.data.data)
-			console.log(res.data)
 		}catch(err){
 			console.log(err)
 		}
@@ -128,20 +109,13 @@ export const Products = () => {
 		}
 	}
 
-	const updateProduct = async () => {
-		try{
-			const header = {'Authorization': `Token ${token}`};
-			const res = await axios.patch(`http://127.0.0.1:8000/api/products/${id}/`, form, { headers: header});
-			setShowAlert(true);
-			setError(false);
-			setIsOpen(!isOpen);
-		}catch(err){
-			console.log(err)
-			setErrorMessage(err.response.data.message)
-			setShowAlert(true);
-			setError(true);
-			setIsOpen(!isOpen);
+	const checkProduct = (product) => {
+		const params = {
+			state: {
+				product
+			}
 		}
+		navigate(`product/${product.id}`, params)
 	}
 
 	useEffect(() => {
@@ -190,9 +164,7 @@ export const Products = () => {
 							products.map((product) => 
 								<TableRow 
 									key={product.id}
-									onClick={() => {
-										openModalEdit(product);
-									}}
+									onClick={() => checkProduct(product)}
 								>
 										<TableCell key={product.product}>{product.product}</TableCell>
 										<TableCell key={product.quantity}>{product.quantity}</TableCell>
@@ -204,39 +176,19 @@ export const Products = () => {
 			</Theme>
 			<Modal
 				open={isOpen}
-				modalHeading={
-					typeForm === 'Create' 
-						? "New Product" 
-						: "Update Product" 
-					}
-				modalLabel={
-					typeForm === 'Create' 
-						? "Add new product"  
-						: "Update product" 
-					}
-				primaryButtonText={
-					typeForm === 'Create' 
-						? "Create" 
-						: "Update" 
-					} 
+				modalHeading={"New Product"}
+				modalLabel={"Add new product"}
+				primaryButtonText={"Create"} 
 				secondaryButtonText="Cancel"
 				onRequestClose={openModal}
-				onRequestSubmit={
-					typeForm === 'Create' 
-					? createProduct
-					: updateProduct
-				}
+				onRequestSubmit={createProduct}
 				primaryButtonDisabled={disabled}
 			>
 				<TextInput
 					data-modal-primary-focus 
 					id="text-input-1" 
 					labelText="Product name" 
-					placeholder={
-						typeForm === 'Create' 
-							? 'Product'
-							: selected.product
-					}
+					placeholder={'Product'}
 					style={{
 						marginBottom: '1rem'
 					}}
@@ -249,11 +201,7 @@ export const Products = () => {
 					data-modal-primary-focus 
 					id="text-input-1" 
 					labelText="Quantity" 
-					placeholder={
-						typeForm === 'Create' 
-							? 'Quantity'	
-							: selected.quantity
-					}
+					placeholder='Quantity'
 					style={{
 						marginBottom: '1rem'
 					}}
@@ -265,16 +213,8 @@ export const Products = () => {
 				<TextInput
 					data-modal-primary-focus 
 					id="text-input-1" 
-					labelText={
-						typeForm === 'Create' 
-							? 'Price'
-							: `Price ${selected.price}`
-					}
-					placeholder={
-						typeForm === 'Create' 
-							? 'Price'
-							: selected.price
-					}
+					labelText='Price'
+					placeholder='Price'
 					style={{
 						marginBottom: '1rem'
 					}}
@@ -287,11 +227,10 @@ export const Products = () => {
 				<Select 
 					id="select-1" 
 					labelText="Category" 
-					helperText="Select a category" 
-					defaultValue={typeForm !== 'Create' && selected.category}
+					helperText="Select a category"
 				>
 					<SelectItem
-						value={''}
+						value=''
 						text=''
 					/>
 					{

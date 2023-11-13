@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {
   HeaderContainer,
 	Header,
@@ -11,9 +11,13 @@ import {
 	Theme
 } from '@carbon/react';
 import { Link } from 'react-router-dom';
-import { Receipt, Wallet, ChartCustom } from '@carbon/icons-react'
+import { Receipt, Wallet, ChartCustom, Money } from '@carbon/icons-react'
+import { AuthContext } from '../../context/AuthContext';
 
 export const Navbar = () => {
+
+	const context = useContext(AuthContext);
+
   return (
     <Theme theme='g90'>
 			<HeaderContainer
@@ -49,12 +53,23 @@ export const Navbar = () => {
 										Purchase
 									</SideNavLink>
 									<SideNavLink
-										renderIcon={ChartCustom}
+										renderIcon={Money}
 										element={Link}
-										to="/admin"
+										to="/shift"
 									>
-										Admin
+										Shift
 									</SideNavLink>
+									{
+										context.is_superuser && (
+											<SideNavLink
+												renderIcon={ChartCustom}
+												element={Link}
+												to="/admin"
+											>
+												Admin
+											</SideNavLink>
+										)
+									}
 								</SideNavItems>
 							</SideNav>
 						</Header>

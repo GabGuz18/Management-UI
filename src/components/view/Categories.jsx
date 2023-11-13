@@ -32,13 +32,9 @@ export const Categories = () => {
 	const [isSelected, setIsSelected] = useState({'id':0, 'category':''})
 	const [typeForm, setTypeForm] = useState('Create')
 
-	const token = localStorage.getItem('token')
-
 	const getCategories = async () => {
 		try{
-			const header = {'Authorization': `Token ${token}`}
-			const res = await axios.get('http://127.0.0.1:8000/api/categories/', { headers: header})
-			console.log(res.data)
+			const res = await axios.get('http://127.0.0.1:8000/api/categories/')
 			setCategories(res.data.data)
 		}
 		catch(err){
